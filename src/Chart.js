@@ -1,14 +1,27 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Bar} from 'react-chartjs-2';
 
 
 
 export default function Chart(props){
+
+    const [chartData,setChartData] = useState(props.data)
+
+    const isFirstRun = useRef(true);
+    useEffect (() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+        setChartData(props.data)
+    }, [props.data]);
+
+
     const data = {
         datasets: [{
             label: 'REFERENCIA MAXIMA',
             type:'line',
-            data: props.data.referencia,
+            data: chartData.referencia,
             fill: false,
             borderColor: '#fc0303',
             backgroundColor: '#fc0303',
@@ -20,7 +33,7 @@ export default function Chart(props){
         },{
             type: 'line',
             label: 'TEMPERATURA',
-            data: props.data.temperatura,
+            data: chartData.temperatura,
             fill: false,
             backgroundColor: '#0f03fc',
             borderColor: '#0f03fc',
@@ -48,7 +61,7 @@ export default function Chart(props){
                     gridLines: {
                         display: false
                     },
-                    labels: props.data.tiempo,
+                    labels: chartData.tiempo,
                 }
             ],
             yAxes: [

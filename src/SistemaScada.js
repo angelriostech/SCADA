@@ -1,6 +1,5 @@
-import React, {useEffect,useState} from 'react'
-import { Button,Card,CardContent,CircularProgress } from '@material-ui/core';
-import { TextField } from '@material-ui/core';
+import React, {useEffect, useState} from 'react'
+import {Button, Card, CardContent, TextField} from '@material-ui/core';
 import Chart from "./Chart";
 
 
@@ -8,9 +7,9 @@ export default function SistemaScada(){
 
     const [encendido,setEncendido] = useState(false)
     const [temperatura,setTemperatura] = useState(0)
-    const [voltaje,setVoltaje] = useState(null)
-    const [periodoDeMuestreo,setPeriodoDeMuestreo] = useState(null)
-    const [referencia,setReferencia] = useState(null)
+    const [voltaje,setVoltaje] = useState("")
+    const [periodoDeMuestreo,setPeriodoDeMuestreo] = useState("")
+    const [referencia,setReferencia] = useState("")
     const [temperaturaChart, setTemperaturaChart] = useState([200, 185, 590, 621, 250, 400, 95])
     const [referenciaChart,setReferenciaChart] = useState([700,700,700,700,700,700,700])
     const [tiempoChart,setTiempoChart] = useState(['January', 'February', 'March', 'April', 'May', 'June', 'July'])
