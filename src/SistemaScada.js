@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useReducer, useState} from 'react'
 import {Button, Card, CardContent, TextField} from '@material-ui/core';
 import Chart from "./Chart";
-
+import Refresh from './refresh.svg'
 
 export default function SistemaScada(){
 
@@ -43,6 +43,11 @@ export default function SistemaScada(){
         }
     },[temperatura])
 
+    useEffect(()=>{
+        if(!instante){
+            setInstante(true)
+        }
+    },[instante])
     function aplicarFormulaDeTemperatura(){
         if(voltaje===0 && temperatura>0){
             setTimeout(() => {
@@ -118,9 +123,12 @@ export default function SistemaScada(){
                             onClick={()=>encenderHorno()}
                         >{encendido?"Apagar":"Encender"}</Button>{' '}
                         <Button
-                            onClick={()=>setInstante(!instante)}
+                            style={{display: "inline-block",marginTop:"10px", width:"20px"}}
+                            onClick={()=>{
+                                setInstante(!instante)
+                            }}
                         >
-                            oeoeoe
+                            <img style ={{width:"30px"}} src={Refresh}/>
                         </Button>
                     </CardContent>
                 </Card>
