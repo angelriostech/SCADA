@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useContext, useEffect, useReducer, useState} from 'react'
 import {Button, Card, CardContent, TextField} from '@material-ui/core';
 import Chart from "./Chart";
 
@@ -7,17 +7,55 @@ export default function SistemaScada(){
 
     const [encendido,setEncendido] = useState(false)
     const [temperatura,setTemperatura] = useState(0)
-    const [voltaje,setVoltaje] = useState("")
-    const [periodoDeMuestreo,setPeriodoDeMuestreo] = useState("")
-    const [referencia,setReferencia] = useState("")
-    const [temperaturaChart, setTemperaturaChart] = useState([200, 185, 590, 621, 250, 400, 95])
-    const [referenciaChart,setReferenciaChart] = useState([700,700,700,700,700,700,700])
-    const [tiempoChart,setTiempoChart] = useState(['January', 'February', 'March', 'April', 'May', 'June', 'July'])
+    const [voltaje,setVoltaje] = useState(0)
+    const [periodoDeMuestreo,setPeriodoDeMuestreo] = useState(0)
+    const [referencia,setReferencia] = useState(0)
+    const [temperaturaChart, setTemperaturaChart] = useState([])
+    const [referenciaChart,setReferenciaChart] = useState([])
+    const [tiempoChart,setTiempoChart] = useState([0])
+    const [instante,setInstante] = useState(false)
+
+
     useEffect(()=>{
-        if(!encendido){
-            setTemperatura(0)
+        if(encendido){
+            aplicarFormulaDeTemperatura()
+        }else{
+            setVoltaje(0)
+            aplicarFormulaDeTemperatura()
         }
     },[encendido])
+
+
+    useEffect(()=>{
+        if(encendido || referenciaChart.length>0){
+            aplicarFormulaDeTemperatura()
+            let pointsTemperatura = temperaturaChart
+            let pointsReferencia = referenciaChart
+            let pointsTiempo = tiempoChart
+            if(temperatura>0){
+                pointsTemperatura.push(temperatura)
+                pointsTiempo.push(pointsTiempo[tiempoChart.length-1]+parseInt(periodoDeMuestreo,10))
+                pointsReferencia.push(referencia)
+            }
+            setTemperaturaChart(pointsTemperatura)
+            setTiempoChart(pointsTiempo)
+            setReferenciaChart(pointsReferencia)
+        }
+    },[temperatura])
+
+    function aplicarFormulaDeTemperatura(){
+        if(voltaje===0 && temperatura>0){
+            setTimeout(() => {
+                setTemperatura(temperatura-periodoDeMuestreo)
+            }, periodoDeMuestreo*1000)
+        }
+        else{
+            setTimeout(() => {
+                setTemperatura(voltaje*periodoDeMuestreo+temperatura)
+            }, periodoDeMuestreo*1000)
+        }
+
+    }
 
     function encenderHorno(){
         if(referencia && voltaje && periodoDeMuestreo){
@@ -79,18 +117,24 @@ export default function SistemaScada(){
                             size="small" variant="contained" color={encendido?"secondary":"primary"}
                             onClick={()=>encenderHorno()}
                         >{encendido?"Apagar":"Encender"}</Button>{' '}
+                        <Button
+                            onClick={()=>setInstante(!instante)}
+                        >
+                            oeoeoe
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
 
             <Card style={{marginLeft:"370px",width:"69%", marginBottom:"-10px", height:"100%",display:"inline-block"}}>
                 <CardContent>
-                    <h3 style={{    fontSize: "30px",marginLeft:"180px"}}>Historico</h3></CardContent>
-                <Chart data={{
-                    temperatura: temperaturaChart,
+                    <h3 style={{   fontSize: "30px",marginLeft:"180px"}}>Historico</h3>
+                {instante &&<Chart data={{
                     tiempo:tiempoChart,
-                    referencia:referenciaChart
-                }}/>
+                    referencia:referenciaChart,
+                    temperatura:temperaturaChart
+                }}/>}
+                    </CardContent>
             </Card>
         </div>
 
