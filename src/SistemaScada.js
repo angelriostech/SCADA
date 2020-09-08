@@ -160,6 +160,11 @@ export default function SistemaScada() {
                         >
                             Exportar info
                         </Button>}
+                        <Button
+                        style={{ display: "inline-block", marginLeft: "70px", marginTop: "10px" }}
+                        onClick={()=> window.location.reload(true)}                        >
+                            Reiniciar
+                        </Button>
                     </CardContent>
                 </Card>
             </div>
