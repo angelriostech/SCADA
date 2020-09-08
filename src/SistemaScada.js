@@ -13,7 +13,8 @@ export default function SistemaScada() {
     const [referenciaChart, setReferenciaChart] = useState([]);
     const [tiempoChart, setTiempoChart] = useState([0]);
     const [instante, setInstante] = useState(false);
-    var exportInfo = [];    
+    var exportInfo = [];
+    var bandera=false;    
 
 
     function downloadTxtFile(texto) {
@@ -62,9 +63,10 @@ export default function SistemaScada() {
     }, [instante]);
 
     function aplicarFormulaDeTemperatura() {
+        bandera=true;
         if (voltaje!=0 && temperatura <= referencia) {
             setTimeout(() => {
-                if (temperatura === referencia) setTemperatura(temperatura - periodoDeMuestreo);
+                if (temperatura >= referencia) setTemperatura(temperatura - periodoDeMuestreo);
                 else setTemperatura(voltaje * periodoDeMuestreo + temperatura);
             }, periodoDeMuestreo * 1000);
         } else if ( temperatura > 0) {
@@ -152,10 +154,9 @@ export default function SistemaScada() {
                         >
                             {encendido ? "Apagar" : "Encender"}
                         </Button>{" "}
-                        {temperatura===0&&<Button
+                        {temperatura===0 &&<Button
                             style={{ display: "inline-block", marginLeft: "50px", marginTop: "10px" }}
-                            onClick={() => exportar()}
-                            
+                            onClick={() => exportar()}                            
                         >
                             Exportar info
                         </Button>}
