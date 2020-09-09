@@ -13,9 +13,7 @@ export default function SistemaScada() {
     const [referenciaChart, setReferenciaChart] = useState([]);
     const [tiempoChart, setTiempoChart] = useState([0]);
     const [instante, setInstante] = useState(false);
-    var exportInfo = [];
-    var bandera=false;    
-
+    var exportInfo = [];      
 
     function downloadTxtFile(texto) {
         const element = document.createElement("a");
@@ -31,29 +29,13 @@ export default function SistemaScada() {
         if (encendido) {
             aplicarFormulaDeTemperatura();
         } else {
-            setVoltaje(0);
-            aplicarFormulaDeTemperatura();
+            setVoltaje(0);            
+            aplicarFormulaDeTemperatura();            
         }
     }, [encendido]);
 
     useEffect(() => {
-        if (temperatura >= referencia && encendido) {
-            setEncendido(false);
-        }
-        if (encendido || referenciaChart.length > 0) {
-            aplicarFormulaDeTemperatura();
-            let pointsTemperatura = temperaturaChart;
-            let pointsReferencia = referenciaChart;
-            let pointsTiempo = tiempoChart;
-            if (temperatura > 0) {
-                pointsTemperatura.push(temperatura);
-                pointsTiempo.push(pointsTiempo[tiempoChart.length - 1] + parseInt(periodoDeMuestreo, 10));
-                pointsReferencia.push(referencia);
-            }
-            setTemperaturaChart(pointsTemperatura);
-            setTiempoChart(pointsTiempo);
-            setReferenciaChart(pointsReferencia);
-        }
+        setTemperaturTimeOut()
     }, [temperatura]);
 
     useEffect(() => {
@@ -62,20 +44,39 @@ export default function SistemaScada() {
         }
     }, [instante]);
 
-    function aplicarFormulaDeTemperatura() {
-        bandera=true;
-        if (voltaje!=0 && temperatura <= referencia) {
+    function setTemperaturTimeOut(){
+        
+            
+            let pointsTemperatura = temperaturaChart;
+            let pointsReferencia = referenciaChart;
+            let pointsTiempo = tiempoChart;
+            if (temperatura > 0) {
+                pointsTemperatura.push(temperatura);
+                pointsTiempo.push(pointsTiempo[tiempoChart.length - 1] + parseInt(periodoDeMuestreo, 10));
+                pointsReferencia.push(referencia);
+            
+            setTemperaturaChart(pointsTemperatura);
+            setTiempoChart(pointsTiempo);
+            setReferenciaChart(pointsReferencia);
+            aplicarFormulaDeTemperatura();
+        }
+    }
+
+    function aplicarFormulaDeTemperatura() {      
+        
+        if (voltaje!=0 ) {
             setTimeout(() => {
-                if (temperatura >= referencia) setTemperatura(temperatura - periodoDeMuestreo);
-                else setTemperatura(voltaje * periodoDeMuestreo + temperatura);
+                setTemperatura(voltaje * periodoDeMuestreo + temperatura);
             }, periodoDeMuestreo * 1000);
-        } else if ( temperatura > 0) {
+        }
+         else if (temperatura >0) {
             setTimeout(() => {
-                setTemperatura(temperatura - periodoDeMuestreo);
+                setTemperaturTimeOut();                
             }, periodoDeMuestreo * 1000);
            
         }
     }
+    
     function exportar() {
         exportInfo = tiempoChart.map((element, i) => {
             return {
@@ -154,12 +155,12 @@ export default function SistemaScada() {
                         >
                             {encendido ? "Apagar" : "Encender"}
                         </Button>{" "}
-                        {temperatura===0 &&<Button
+                        <Button
                             style={{ display: "inline-block", marginLeft: "50px", marginTop: "10px" }}
                             onClick={() => exportar()}                            
                         >
                             Exportar info
-                        </Button>}
+                        </Button>
                         <Button
                         style={{ display: "inline-block", marginLeft: "70px", marginTop: "10px" }}
                         onClick={()=> window.location.reload(true)}                        >
